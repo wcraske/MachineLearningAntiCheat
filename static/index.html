@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Aimbot Detection</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      color: #222;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .status-bar, .stats, .predictions {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background: white;
+    }
+
+    .status-item {
+      margin-bottom: 5px;
+    }
+
+    .prediction {
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .aimbot {
+      border-left: 4px solid red;
+    }
+
+    .clean {
+      border-left: 4px solid green;
+    }
+
+    .probability {
+      float: right;
+      font-weight: bold;
+    }
+
+    .stat {
+      margin: 5px 0;
+    }
+
+    .alert {
+      background: #fdd;
+      color: #900;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #f99;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Aimbot Detection</h1>
+
+  <div class="status-bar">
+    <div class="status-item"><strong>Status:</strong> <span id="connection-text">Connecting...</span></div>
+    <div class="status-item"><strong>Last Update:</strong> <span id="last-update">Never</span></div>
+    <div class="status-item"><strong>Active Players:</strong> <span id="active-players">0</span></div>
+  </div>
+
+  <div id="error-alert" class="alert" style="display:none;">
+    Connection error. Is the API running?
+  </div>
+
+  <div class="stats">
+    <div class="stat"><strong>Total:</strong> <span id="total-players">0</span></div>
+    <div class="stat"><strong>Aimbot:</strong> <span id="aimbot-detected">0</span></div>
+    <div class="stat"><strong>Clean:</strong> <span id="clean-players">0</span></div>
+    <div class="stat"><strong>Detection Rate:</strong> <span id="detection-rate">0%</span></div>
+  </div>
+
+  <div class="predictions" id="current-predictions">
+    <em>No predictions yet...</em>
+  </div>
+
+  <button onclick="fetchPredictions()">Refresh</button>
+
+  <script>
+    let lastUpdateTime = null;
+
+    function updateConnectionStatus(connected) {
+      document.getElementById('connection-text').textContent = connected ? 'Connected' : 'Disconnected';
+      document.getElementById('error-alert').style.display = connected ? 'none' : 'block';
+    }
+
+    function formatTimestamp(ts) {
+      return new Date(ts).toLocaleTimeString();
+    }
+
+    function getProbClass(p) {
+      return p >= 0.7 ? 'aimbot' : 'clean';
+    }
+
+    function renderPredictions(preds) {
+      const el = document.getElementById('current-predictions');
+      if (!preds || preds.length === 0) {
+        el.innerHTML = '<em>No predictions yet...</em>';
+        return;
+      }
+      el.innerHTML = preds.map(p => `
+        <div class="prediction ${getProbClass(p.aimbot_probability)}">
+          <div><strong>${p.player_id}</strong> 
+            <span class="probability">${Math.round(p.aimbot_probability * 100)}%</span>
+          </div>
+          <div>Status: ${p.aimbot_prediction ? 'Aimbot' : 'Clean'}</div>
+          <div>Last Shot: ${formatTimestamp(p.timestamp)}</div>
+        </div>
+      `).join('');
+    }
+
+    function updateStats(preds) {
+      const total = preds.length;
+      const aimbot = preds.filter(p => p.aimbot_prediction).length;
+      const clean = total - aimbot;
+      const rate = total ? Math.round((aimbot / total) * 100) : 0;
+
+      document.getElementById('total-players').textContent = total;
+      document.getElementById('aimbot-detected').textContent = aimbot;
+      document.getElementById('clean-players').textContent = clean;
+      document.getElementById('detection-rate').textContent = `${rate}%`;
+      document.getElementById('active-players').textContent = total;
+    }
+
+    async function fetchPredictions() {
+      try {
+        const res = await fetch('/predictions');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        updateConnectionStatus(true);
+        renderPredictions(data);
+        updateStats(data);
+        lastUpdateTime = new Date();
+        document.getElementById('last-update').textContent = formatTimestamp(lastUpdateTime);
+      } catch {
+        updateConnectionStatus(false);
+      }
+    }
+
+    fetchPredictions();
+    setInterval(fetchPredictions, 30000);
+  </script>
+</body>
+</html>

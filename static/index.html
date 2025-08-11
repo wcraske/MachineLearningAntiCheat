@@ -86,7 +86,7 @@
       el.innerHTML = preds.map(p => `
         <div class="prediction ${getProbClass(p.aimbot_probability)}">
           <div><strong>${p.player_id}</strong> 
-            <span class="probability">${Math.round(p.aimbot_probability * 100)}% Likelihood of aimbots</span>
+            <span class="probability">${Math.round(p.aimbot_probability * 100)}% chance of aimbot</span>
           </div>
           <div>Status: ${p.aimbot_prediction ? 'Aimbot' : 'Legit'}</div>
           <div>Last Shot: ${formatTimestamp(p.timestamp)}</div>

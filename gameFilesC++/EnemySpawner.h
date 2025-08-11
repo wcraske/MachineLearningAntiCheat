@@ -32,7 +32,7 @@ public:
 	//delay after BP of enemy spawned
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
-	float SpawnTime = 0.2f;
+	float SpawnTime = 5.0f;
 
 	//spawns enemy BP
 	UFUNCTION()

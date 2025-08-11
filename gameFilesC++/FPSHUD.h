@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Engine/Canvas.h"
+#include "TelemetryFPS4Character.h"
 #include "FPSHUD.generated.h"
 
 /**
@@ -23,4 +24,13 @@ protected:
 	// This will be drawn at the center of the screen.
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* CrosshairTexture;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	FString AmmoCountText;
+
+	// Font for UI text
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	class UFont* HUDFont;
+
+	
 };

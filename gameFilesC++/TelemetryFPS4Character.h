@@ -10,7 +10,12 @@
 #include "Containers/Queue.h"
 #include "FPSProjectile.h"
 #include "Enemy.h"
+#include "AntiCheatGuard.h"
 #include "TelemetryFPS4Character.generated.h"
+
+//forward declarations
+class UAntiCheatManager;
+
 
 
 UCLASS()
@@ -29,6 +34,9 @@ protected:
 	// Projectile class to spawn.
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AFPSProjectile> ProjectileClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 ammoCount = 30;
 
 public:
 	// Called every frame
@@ -108,5 +116,13 @@ public:
 
 	float LastTelemetrySendTime = 0.0f;
 	float TelemetrySendInterval = 0.2f;
+
+
+
+	UFUNCTION()
+	int32 GetAmmoCount() const { return ammoCount; }
+	
+
+
 
 };

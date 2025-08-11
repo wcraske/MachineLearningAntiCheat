@@ -7,10 +7,12 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Enemy.h"
+#include "AntiCheatGuard.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Http.h"
+
 
 // Sets default values
 ATelemetryFPS4Character::ATelemetryFPS4Character()
@@ -69,13 +71,17 @@ void ATelemetryFPS4Character::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	if (GEngine)
 	{
 		// Display a debug message for five seconds.
 		// The -1 "Key" value argument prevents the message from being updated or refreshed.
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("We are using FPSCharacter."));
 	}
+
+
 }
+
 
 // Called every frame
 void ATelemetryFPS4Character::Tick(float DeltaTime)
@@ -198,7 +204,7 @@ void ATelemetryFPS4Character::Aimbot()
 				GetController()->SetControlRotation(AimRotation);
 				if (!bFireScheduled)
 				{
-					float delay = FMath::RandRange(0.15f, 0.3f);
+					float delay = FMath::RandRange(0.51f, 0.25f);
 					GetWorld()->GetTimerManager().SetTimer(TriggerAimbot, this, &ATelemetryFPS4Character::RandomFire, delay, false);
 					bFireScheduled = true;
 				}
@@ -241,6 +247,31 @@ void ATelemetryFPS4Character::SendTelemetry()
 void ATelemetryFPS4Character::Fire()
 {
 	bCurrentlyFiring = true;
+
+	ammoCount -= 1;
+
+	// Get reference to world
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	// Find AntiCheatGuard actor (assumes only one exists in the level)
+	TArray<AActor*> Guards;
+	UGameplayStatics::GetAllActorsOfClass(World, AAntiCheatGuard::StaticClass(), Guards);
+
+	AAntiCheatGuard* Guard = Cast<AAntiCheatGuard>(Guards[0]);
+	if (Guard)
+	{
+		Guard->HandleAmmoCount(ammoCount);
+	}
+	
+
+
+	if (ammoCount <= 0)
+	{
+		ammoCount = 30;
+	}
+
+
 	//get camera location and rotation, then use them for viewpoint
 	FVector CameraLocation;
 	FRotator CameraRotation;
@@ -255,11 +286,7 @@ void ATelemetryFPS4Character::Fire()
 	FVector AdjustedStart = CameraLocation + CameraRotation.RotateVector(FVector(0.0f, 0.0f, 50.0f));
 
 
-	//get reference to world, for spawning line traces
-	UWorld* World = GetWorld();
-	if (!World) {
-		return;
-	}
+	//get reference to world, for spawning line traces get world
 
 	//if using hitscan default on
 	if (bUseHitscan)

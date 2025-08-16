@@ -30,9 +30,9 @@ void AFPSHUD::DrawHUD()
 
     if (PlayerCharacter)
     {
-        // Position for ammo counter (bottom-right corner)
+     
         FVector2D AmmoPosition(Canvas->ClipX * 0.75f, Canvas->ClipY * 0.75f);
-        // Create the ammo text string
+
         FString AmmoText = FString::Printf(TEXT("Ammo: %d"), PlayerCharacter->GetAmmoCount());
 		
 		FCanvasTextItem TextItem(AmmoPosition, FText::FromString(AmmoText), GEngine->GetSmallFont(), FLinearColor::Red);	

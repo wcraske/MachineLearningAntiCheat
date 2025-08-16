@@ -254,7 +254,7 @@ void ATelemetryFPS4Character::Fire()
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	// Find AntiCheatGuard actor (assumes only one exists in the level)
+
 	TArray<AActor*> Guards;
 	UGameplayStatics::GetAllActorsOfClass(World, AAntiCheatGuard::StaticClass(), Guards);
 
@@ -302,11 +302,11 @@ void ATelemetryFPS4Character::Fire()
 		//perform raycast from cam position to trace end
 		//using visibility collision channel
 		bool bHit = World->LineTraceSingleByChannel(
-			Hit,              // Out parameter: stores hit result
-			AdjustedStart,   // Start point of trace (player's eye/camera)
-			TraceEnd,         // End point of trace (far in the aiming direction)
-			ECC_Visibility,   // Trace channel; default choice for hitscan
-			Params            // Collision settings (ignore self)
+			Hit,             
+			AdjustedStart,   
+			TraceEnd,         
+			ECC_Visibility,  
+			Params           
 		);
 
 		//if hit smth
@@ -325,17 +325,6 @@ void ATelemetryFPS4Character::Fire()
 				FString Payload = FString::Printf(TEXT("{\"player_id\": \"%s\", \"aim_offset_x\": %.2f, \"aim_offset_y\": %.2f, \"hit_x\": %.2f, \"hit_y\": %.2f, \"hit_z\": %.2f}"),*GetName(), CameraRotation.Pitch, CameraRotation.Yaw, Hit.ImpactPoint.X, Hit.ImpactPoint.Y, Hit.ImpactPoint.Z);
 				TelemetryQueue.Enqueue(Payload);
 				//SendTelemetry(CameraRotation.Pitch, CameraRotation.Yaw, Hit.ImpactPoint); commented out for queue instead
-
-
-				// Apply point damage to the hit actor
-				// Parameters:
-				// - HitActor: the actor being damaged
-				// - 20.0f: amount of damage
-				// - CameraRotation.Vector(): direction of the shot
-				// - Hit: contains info about where and how the actor was hit
-				// - GetController(): controller that caused the damage (usually the player)
-				// - this: the actor that caused the damage (this character)
-				// - nullptr: optional damage type class (null for default)
 				UGameplayStatics::ApplyPointDamage(
 					HitActor,
 					20.0f,

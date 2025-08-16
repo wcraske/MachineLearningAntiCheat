@@ -19,6 +19,8 @@ Dr. Omer Waqar
 August 16th, 2025
 Footage of software: https://youtu.be/s50n1qt9JnI
 Github with full code: https://github.com/wcraske/MachineLearningAntiCheat
+
+
 Chapter 1 - Fundamentals of Video Games, Anti-Cheats, and Machine Learning:
 As long as video games have been around, malicious actors have found ways to exploit
 the games. These actors can be defined as cheaters, who, in some capacity, are gaining an unfair

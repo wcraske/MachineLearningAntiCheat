@@ -18,7 +18,6 @@ public class TelemetryFPS4 : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
-        // Platform-specific libraries
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             PublicSystemLibraries.Add("Psapi.lib");

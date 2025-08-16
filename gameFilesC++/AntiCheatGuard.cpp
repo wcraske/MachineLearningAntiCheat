@@ -99,7 +99,6 @@ void AAntiCheatGuard::CompareProcessName(DWORD ProcessID)
 	}
 }
 
-// --- AMMO OBFUSCATION LOGIC ---
 
 void AAntiCheatGuard::SetAmmoShadowCount(int32 ammo)
 {
@@ -120,18 +119,17 @@ int32 AAntiCheatGuard::GetAmmoShadowCount()
 	return ammoEncrypted ^ xorKey;
 }
 
-// --- AMMO MONITORING LOGIC ---
+
 
 void AAntiCheatGuard::HandleAmmoCount(int32 ammo)
 {
 	if (PreviousAmmo != -1 && ammo < PreviousAmmo)
 	{
-		// Real ammo decreased; update shadow
+		// real ammo decreased then update shadow
 		int32 diff = PreviousAmmo - ammo;
 		int32 currentShadowAmmo = FMath::Max(0, GetAmmoShadowCount() - diff);
 		SetAmmoShadowCount(currentShadowAmmo);
 	}
-	// Optional: handle increase (reloads, cheats, etc.)
 	else if (PreviousAmmo != -1 && ammo > PreviousAmmo)
 	{
 		int32 diff = ammo - PreviousAmmo;

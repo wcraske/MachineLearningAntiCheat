@@ -200,7 +200,7 @@ total = len(output_df)
 aimbot_count = int(output_df['aimbot_prediction'].sum())
 not_aimbot_count = total - aimbot_count
 
-print("\n--- Summary Statistics ---")
+
 print(f"Total Sequences Evaluated: {total}")
 print(f"Aimbot Predictions: {aimbot_count} ({aimbot_count / total:.2%})")
 print(f"Not Aimbot Predictions: {not_aimbot_count} ({not_aimbot_count / total:.2%})")
